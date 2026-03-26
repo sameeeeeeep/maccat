@@ -52,6 +52,9 @@ class CatState: ObservableObject {
     @Published var isAnimating: Bool = false
     @Published var actionText: String? = nil
     @Published var activeAction: String? = nil // "feed", "play", "pet", "nap" - observed by walking cat
+    @Published var catColor: String {
+        didSet { UserDefaults.standard.set(catColor, forKey: "catColor") }
+    }
 
     private var decayTimer: Timer?
     private var actionTimer: Timer?
@@ -62,6 +65,7 @@ class CatState: ObservableObject {
         self.hunger = UserDefaults.standard.object(forKey: "catHunger") as? Double ?? 80.0
         self.happiness = UserDefaults.standard.object(forKey: "catHappiness") as? Double ?? 80.0
         self.energy = UserDefaults.standard.object(forKey: "catEnergy") as? Double ?? 80.0
+        self.catColor = UserDefaults.standard.string(forKey: "catColor") ?? "original"
         updateMood()
         startDecayTimer()
     }

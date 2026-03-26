@@ -48,6 +48,7 @@ struct WalkingCatView: View {
                 .interpolation(.none)
                 .resizable()
                 .frame(width: 72, height: 72)
+                .colorMultiply(catTintColor)
                 .scaleEffect(x: facingRight ? 1 : -1, y: 1)
                 .position(x: catX, y: catY)
                 .onAppear {
@@ -68,6 +69,21 @@ struct WalkingCatView: View {
                 }
         }
         .frame(width: screenWidth, height: screenHeight)
+    }
+
+    // MARK: - Color
+
+    var catTintColor: Color {
+        switch cat.catColor {
+        case "orange": return Color(red: 1.0, green: 0.8, blue: 0.5)
+        case "black": return Color(red: 0.3, green: 0.3, blue: 0.35)
+        case "white": return Color(red: 1.0, green: 1.0, blue: 1.0)
+        case "ginger": return Color(red: 1.0, green: 0.7, blue: 0.3)
+        case "blue": return Color(red: 0.6, green: 0.7, blue: 1.0)
+        case "pink": return Color(red: 1.0, green: 0.7, blue: 0.8)
+        case "golden": return Color(red: 1.0, green: 0.85, blue: 0.4)
+        default: return .white // original = no tint
+        }
     }
 
     // MARK: - Sprites

@@ -74,6 +74,28 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         renameItem.target = self
         menu.addItem(renameItem)
 
+        // Color submenu
+        let colorItem = NSMenuItem(title: "🎨 Color", action: nil, keyEquivalent: "")
+        let colorMenu = NSMenu()
+        let colors = [
+            ("Original", "original"),
+            ("Orange", "orange"),
+            ("Ginger", "ginger"),
+            ("Golden", "golden"),
+            ("Black", "black"),
+            ("White", "white"),
+            ("Blue", "blue"),
+            ("Pink", "pink"),
+        ]
+        for (label, value) in colors {
+            let item = NSMenuItem(title: label, action: #selector(changeColor(_:)), keyEquivalent: "")
+            item.target = self
+            item.representedObject = value
+            colorMenu.addItem(item)
+        }
+        colorItem.submenu = colorMenu
+        menu.addItem(colorItem)
+
         menu.addItem(NSMenuItem.separator())
 
         let quitItem = NSMenuItem(title: "Quit", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
@@ -153,6 +175,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     @objc func wakeCat() {
         catState.wake()
+    }
+
+    @objc func changeColor(_ sender: NSMenuItem) {
+        if let color = sender.representedObject as? String {
+            catState.catColor = color
+        }
     }
 
     @objc func renameCat() {
