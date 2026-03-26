@@ -1,4 +1,4 @@
-# MenuBarCat
+# maccat
 
 **A cat that chases the mouse.**
 
@@ -20,14 +20,14 @@ A little pixel art cat that lives on your Mac. It follows your cursor around, ho
 
 ### Download
 
-1. Grab `MenuBarCat.app.zip` from [Releases](https://github.com/sameeeeeeep/MenuBarCat/releases)
+1. Grab `maccat.app.zip` from [Releases](https://github.com/sameeeeeeep/maccat/releases)
 2. Unzip and drag to Applications
 3. Open it (right-click > Open if macOS blocks it)
 
 ### Build from source
 
 ```bash
-git clone https://github.com/sameeeeeeep/MenuBarCat.git
+git clone https://github.com/sameeeeeeep/maccat.git
 cd MenuBarCat
 xcodebuild -project MenuBarCat.xcodeproj -scheme MenuBarCat build
 ```
