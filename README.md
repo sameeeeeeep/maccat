@@ -1,8 +1,6 @@
-# maccat
+# mac cat
 
-**A cat that chases the mouse.**
-
-A little pixel art cat that lives on your Mac. It follows your cursor around, hops between levels like a platformer, perches on your windows, and meows when it wants attention.
+**A cat that lives on your Mac and chases your mouse cursor all across the screen.**
 
 ![macOS](https://img.shields.io/badge/macOS-13.0%2B-blue) ![Swift](https://img.shields.io/badge/Swift-5-orange) ![License](https://img.shields.io/badge/license-MIT-green)
 
