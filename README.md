@@ -20,9 +20,9 @@ A little pixel art cat that lives on your Mac. It follows your cursor around, ho
 
 ### Download
 
-1. Grab `maccat.app.zip` from [Releases](https://github.com/sameeeeeeep/maccat/releases)
-2. Unzip and drag to Applications
-3. Open it (right-click > Open if macOS blocks it)
+1. Grab `maccat.dmg` from [Releases](https://github.com/sameeeeeeep/maccat/releases)
+2. Open the DMG and drag maccat to Applications
+3. Launch it (right-click > Open if macOS blocks it)
 
 ### Build from source
 
