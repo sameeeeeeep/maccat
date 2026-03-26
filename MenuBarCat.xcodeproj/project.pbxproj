@@ -1,0 +1,313 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		AAA00001 /* MenuBarCatApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00001; };
+		AAA00002 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00002; };
+		AAA00003 /* CatState.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00003; };
+		AAA00004 /* CatPopoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00004; };
+		AAA00005 /* CatAvatarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00005; };
+		AAA00006 /* NeedsBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00006; };
+		AAA00007 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BBB00007; };
+		AAA00008 /* WalkingCatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00009; };
+		AAA00009 /* CatWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00010; };
+		AAA00010 /* Sprites in Resources */ = {isa = PBXBuildFile; fileRef = BBB00011; };
+		AAA00011 /* SoundManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00012; };
+		AAA00012 /* Sounds in Resources */ = {isa = PBXBuildFile; fileRef = BBB00013; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		BBB00001 /* MenuBarCatApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarCatApp.swift; sourceTree = "<group>"; };
+		BBB00002 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		BBB00003 /* CatState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatState.swift; sourceTree = "<group>"; };
+		BBB00004 /* CatPopoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatPopoverView.swift; sourceTree = "<group>"; };
+		BBB00005 /* CatAvatarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatAvatarView.swift; sourceTree = "<group>"; };
+		BBB00006 /* NeedsBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NeedsBarView.swift; sourceTree = "<group>"; };
+		BBB00007 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		BBB00008 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BBB00009 /* WalkingCatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalkingCatView.swift; sourceTree = "<group>"; };
+		BBB00010 /* CatWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatWindow.swift; sourceTree = "<group>"; };
+		BBB00011 /* Sprites */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Sprites; sourceTree = "<group>"; };
+		BBB00012 /* SoundManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundManager.swift; sourceTree = "<group>"; };
+		BBB00013 /* Sounds */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Sounds; sourceTree = "<group>"; };
+		CCC00001 /* MenuBarCat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MenuBarCat.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		DDD00001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		EEE00001 = {
+			isa = PBXGroup;
+			children = (
+				EEE00002 /* MenuBarCat */,
+				EEE00005 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		EEE00002 /* MenuBarCat */ = {
+			isa = PBXGroup;
+			children = (
+				BBB00001 /* MenuBarCatApp.swift */,
+				BBB00002 /* AppDelegate.swift */,
+				BBB00010 /* CatWindow.swift */,
+				BBB00012 /* SoundManager.swift */,
+				EEE00003 /* Models */,
+				EEE00004 /* Views */,
+				EEE00006 /* Resources */,
+				BBB00008 /* Info.plist */,
+			);
+			path = MenuBarCat;
+			sourceTree = "<group>";
+		};
+		EEE00003 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				BBB00003 /* CatState.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		EEE00004 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				BBB00004 /* CatPopoverView.swift */,
+				BBB00005 /* CatAvatarView.swift */,
+				BBB00006 /* NeedsBarView.swift */,
+				BBB00009 /* WalkingCatView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		EEE00005 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				CCC00001 /* MenuBarCat.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		EEE00006 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				BBB00007 /* Assets.xcassets */,
+				BBB00011 /* Sprites */,
+				BBB00013 /* Sounds */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		FFF00001 /* MenuBarCat */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = GGG00003;
+			buildPhases = (
+				FFF00002 /* Sources */,
+				DDD00001 /* Frameworks */,
+				FFF00003 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MenuBarCat;
+			productName = MenuBarCat;
+			productReference = CCC00001 /* MenuBarCat.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		HHH00001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+			};
+			buildConfigurationList = GGG00001;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = EEE00001;
+			productRefGroup = EEE00005 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				FFF00001 /* MenuBarCat */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		FFF00003 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AAA00007 /* Assets.xcassets in Resources */,
+				AAA00010 /* Sprites in Resources */,
+				AAA00012 /* Sounds in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		FFF00002 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AAA00001 /* MenuBarCatApp.swift in Sources */,
+				AAA00002 /* AppDelegate.swift in Sources */,
+				AAA00003 /* CatState.swift in Sources */,
+				AAA00004 /* CatPopoverView.swift in Sources */,
+				AAA00005 /* CatAvatarView.swift in Sources */,
+				AAA00006 /* NeedsBarView.swift in Sources */,
+				AAA00008 /* WalkingCatView.swift in Sources */,
+				AAA00009 /* CatWindow.swift in Sources */,
+				AAA00011 /* SoundManager.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		GGG00004 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		GGG00005 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+			};
+			name = Release;
+		};
+		GGG00006 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MenuBarCat/Info.plist;
+				INFOPLIST_KEY_LSUIElement = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.cat.MenuBarCat;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		GGG00007 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MenuBarCat/Info.plist;
+				INFOPLIST_KEY_LSUIElement = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.cat.MenuBarCat;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		GGG00001 /* Build configuration list for PBXProject "MenuBarCat" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				GGG00004 /* Debug */,
+				GGG00005 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		GGG00003 /* Build configuration list for PBXNativeTarget "MenuBarCat" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				GGG00006 /* Debug */,
+				GGG00007 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+	};
+	rootObject = HHH00001 /* Project object */;
+}
