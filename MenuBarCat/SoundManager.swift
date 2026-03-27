@@ -3,6 +3,11 @@ import AVFoundation
 class SoundManager {
     static let shared = SoundManager()
 
+    var isMuted: Bool {
+        get { UserDefaults.standard.bool(forKey: "soundMuted") }
+        set { UserDefaults.standard.set(newValue, forKey: "soundMuted") }
+    }
+
     private var players: [String: AVAudioPlayer] = [:]
 
     private init() {
@@ -20,7 +25,7 @@ class SoundManager {
     }
 
     func play(_ name: String, volume: Float = 0.5) {
-        guard let player = players[name] else { return }
+        guard !isMuted, let player = players[name] else { return }
         player.volume = volume
         player.currentTime = 0
         player.play()

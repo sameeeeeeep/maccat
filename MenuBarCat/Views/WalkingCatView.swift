@@ -13,8 +13,17 @@ enum CatAction: Equatable {
     case jumping       // play_2-3 (mid-air frames)
 }
 
+/// Shared position so buddy cat can track the main cat
+class MainCatPosition: ObservableObject {
+    @Published var x: CGFloat = 300
+    @Published var y: CGFloat = 600
+    @Published var action: CatAction = .idle
+}
+
 struct WalkingCatView: View {
     @ObservedObject var cat: CatState
+    @ObservedObject var buddyManager: BuddyCatManager
+    @StateObject private var mainPos = MainCatPosition()
     @State private var catX: CGFloat = 300
     @State private var catY: CGFloat = 600
     @State private var catAction: CatAction = .idle
@@ -35,6 +44,36 @@ struct WalkingCatView: View {
 
     var body: some View {
         ZStack {
+            // Focus mode: dark overlay, cats fight on top
+            if buddyManager.focusModeEnabled && buddyManager.isDistracted {
+                Color.black.opacity(0.75)
+                    .ignoresSafeArea()
+
+                Text("get back to work")
+                    .font(.system(size: 18, weight: .medium, design: .rounded))
+                    .foregroundColor(.white.opacity(0.7))
+                    .position(x: screenWidth / 2, y: screenHeight / 2 - 60)
+            }
+
+            // Stop fight sounds when overlay disappears
+            EmptyView()
+                .onChange(of: buddyManager.isDistracted) { distracted in
+                    if !distracted {
+                        SoundManager.shared.stopAll()
+                        catAction = .idle
+                    } else {
+                        // Start fighting
+                        catAction = .playing
+                        SoundManager.shared.play("hiss", volume: 0.5)
+                    }
+                }
+                .onChange(of: buddyManager.focusModeEnabled) { enabled in
+                    if !enabled {
+                        SoundManager.shared.stopAll()
+                        catAction = .idle
+                    }
+                }
+
             if let text = cat.actionText {
                 Text(text)
                     .font(.system(size: 16, weight: .bold))
@@ -43,6 +82,14 @@ struct WalkingCatView: View {
                     .transition(.scale.combined(with: .opacity))
                     .animation(.spring(response: 0.3), value: cat.actionText)
             }
+
+            // Buddy cat
+            BuddyCatView(
+                buddyManager: buddyManager,
+                mainPos: mainPos,
+                screenWidth: screenWidth,
+                screenHeight: screenHeight
+            )
 
             spriteImage
                 .interpolation(.none)
@@ -121,9 +168,16 @@ struct WalkingCatView: View {
         }
     }
 
+    func syncPosition() {
+        mainPos.x = catX
+        mainPos.y = catY
+        mainPos.action = catAction
+    }
+
     func startAnimationLoop() {
         frameTimer = Timer.scheduledTimer(withTimeInterval: 0.15, repeats: true) { _ in
             frame += 1
+            syncPosition()
         }
     }
 
@@ -140,6 +194,18 @@ struct WalkingCatView: View {
 
             let mouseMoved = abs(mouseX - lastMousePos.x) > 3 || abs(mouseY - lastMousePos.y) > 3
             lastMousePos = CGPoint(x: mouseX, y: mouseY)
+
+            // Fight mode: ignore cursor, chase around screen
+            if buddyManager.focusModeEnabled && buddyManager.isDistracted {
+                catAction = .playing
+                // Run around erratically
+                let fightX = catX + CGFloat.random(in: -40...40)
+                let fightY = catY + CGFloat.random(in: -20...20)
+                catX = max(40, min(screenWidth - 40, fightX))
+                catY = max(40, min(screenHeight - 40, fightY))
+                facingRight = Bool.random()
+                return
+            }
 
             if cat.activeAction != nil { return }
             if catAction == .sleeping || catAction == .lieDown { return }

@@ -4,5 +4,7 @@
 <dict>
 	<key>LSUIElement</key>
 	<true/>
+	<key>NSAppleEventsUsageDescription</key>
+	<string>macthecat needs to check which website you're on to match your buddy cat and enable focus mode.</string>
 </dict>
 </plist>

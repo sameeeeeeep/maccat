@@ -61,7 +61,7 @@ class CatState: ObservableObject {
     var onMoodChanged: ((CatMood) -> Void)?
 
     init() {
-        self.name = UserDefaults.standard.string(forKey: "catName") ?? "Mochi"
+        self.name = UserDefaults.standard.string(forKey: "catName") ?? "Mac"
         self.hunger = UserDefaults.standard.object(forKey: "catHunger") as? Double ?? 80.0
         self.happiness = UserDefaults.standard.object(forKey: "catHappiness") as? Double ?? 80.0
         self.energy = UserDefaults.standard.object(forKey: "catEnergy") as? Double ?? 80.0

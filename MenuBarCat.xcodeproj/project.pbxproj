@@ -19,6 +19,9 @@
 		AAA00010 /* Sprites in Resources */ = {isa = PBXBuildFile; fileRef = BBB00011; };
 		AAA00011 /* SoundManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00012; };
 		AAA00012 /* Sounds in Resources */ = {isa = PBXBuildFile; fileRef = BBB00013; };
+		A8D7DF2699FB423B82B5F976 /* BuddyCat.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB479062407941FE8629AE2A /* BuddyCat.swift */; };
+		D0FD9391811E4BD994D6C454 /* BuddyCatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97048AA5D52A410C827BA27C /* BuddyCatView.swift */; };
+		60E637EB82254BCC82942561 /* CatFightView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74E0C4F6BE044EB2A133D9DB /* CatFightView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,6 +39,9 @@
 		BBB00012 /* SoundManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundManager.swift; sourceTree = "<group>"; };
 		BBB00013 /* Sounds */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Sounds; sourceTree = "<group>"; };
 		CCC00001 /* MenuBarCat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MenuBarCat.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		EB479062407941FE8629AE2A /* BuddyCat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuddyCat.swift; sourceTree = "<group>"; };
+		97048AA5D52A410C827BA27C /* BuddyCatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuddyCatView.swift; sourceTree = "<group>"; };
+		74E0C4F6BE044EB2A133D9DB /* CatFightView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatFightView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -64,6 +70,7 @@
 				BBB00002 /* AppDelegate.swift */,
 				BBB00010 /* CatWindow.swift */,
 				BBB00012 /* SoundManager.swift */,
+				EB479062407941FE8629AE2A /* BuddyCat.swift */,
 				EEE00003 /* Models */,
 				EEE00004 /* Views */,
 				EEE00006 /* Resources */,
@@ -87,6 +94,8 @@
 				BBB00005 /* CatAvatarView.swift */,
 				BBB00006 /* NeedsBarView.swift */,
 				BBB00009 /* WalkingCatView.swift */,
+				74E0C4F6BE044EB2A133D9DB /* CatFightView.swift */,
+				97048AA5D52A410C827BA27C /* BuddyCatView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -175,6 +184,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				60E637EB82254BCC82942561 /* CatFightView.swift in Sources */,
+				D0FD9391811E4BD994D6C454 /* BuddyCatView.swift in Sources */,
+				A8D7DF2699FB423B82B5F976 /* BuddyCat.swift in Sources */,
 				AAA00001 /* MenuBarCatApp.swift in Sources */,
 				AAA00002 /* AppDelegate.swift in Sources */,
 				AAA00003 /* CatState.swift in Sources */,
