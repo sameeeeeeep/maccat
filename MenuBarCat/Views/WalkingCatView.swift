@@ -507,7 +507,7 @@ struct WalkingCatView: View {
                   let ownerName = window[kCGWindowOwnerName as String] as? String else { continue }
 
             if layer != 0 { continue }
-            if ownerName == "MenuBarCat" || ownerName == "Window Server" { continue }
+            if ownerName == "MenuBarCat" || ownerName == "macthecat" || ownerName == "Window Server" { continue }
 
             let x = boundsDict["X"] ?? 0
             let y = boundsDict["Y"] ?? 0

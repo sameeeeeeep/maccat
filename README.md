@@ -1,29 +1,29 @@
 # macthecat
 
-**A desktop pet cat for macOS that follows your cursor, befriends your apps, and fights you off Instagram.**
+**your mac has a cat now. deal with it.**
+
+a pixel art cat that lives on your screen, chases your cursor like it owes him money, and judges your browser habits.
 
 ![macOS](https://img.shields.io/badge/macOS-13.0%2B-blue) ![Swift](https://img.shields.io/badge/Swift-5-orange) ![License](https://img.shields.io/badge/license-MIT-green)
 
-## Features
+## what does he do
 
-- **Follows your cursor** - walks and hops between levels like a platformer to reach you
-- **Buddy cat** - a companion cat spawns based on your active app or website (orange for Claude, blue for VS Code, pink for Instagram, red for YouTube, and many more)
-- **Focus mode** - blocks distracting sites (Instagram, YouTube, Reddit, TikTok, etc.) by having your cats fight on screen until you navigate away
-- **Tamagotchi needs** - hunger, happiness, and energy that decay over time
-- **Sprite animations** - walking, sitting, sleeping, grooming, playing, stretching, jumping
-- **Sounds** - meows, purrs, chirps, and hisses (with mute toggle)
-- **Color picker** - original, orange, ginger, golden, black, white, blue, pink
-- **Perches on windows** - sits on top of your open apps
+- **chases your cursor** - hops between levels like a little platformer character. he will find you.
+- **buddy system** - a second cat spawns based on whatever app you're using. open Claude? orange cat appears. VS Code? blue cat. Instagram? pink cat. they hang out together.
+- **focus mode** - turn this on and try opening Instagram. your cats will literally start fighting on screen and block you from doomscrolling. you asked for this.
+- **tamagotchi vibes** - hunger, happiness, energy. they decay. he will meow at you when he's hungry. you will feel guilty.
+- **sounds** - meows, purrs, chirps when happy, hisses when you're on Instagram in focus mode. mute button exists if your coworkers are wondering why your laptop is meowing.
+- **customizable** - 8 colors. rename him whatever you want. he doesn't care, he's a cat.
 
-## Install
+## install
 
-### Download
+### download
 
-1. Grab `macthecat.dmg` from [Releases](https://github.com/sameeeeeeep/maccat/releases)
-2. Open the DMG and drag macthecat to Applications
-3. Launch it (right-click > Open if macOS blocks it)
+1. grab `macthecat.dmg` from [Releases](https://github.com/sameeeeeeep/maccat/releases)
+2. drag to Applications
+3. launch (right-click > Open if macOS gets suspicious)
 
-### Build from source
+### build from source
 
 ```bash
 git clone https://github.com/sameeeeeeep/maccat.git
@@ -31,53 +31,54 @@ cd maccat
 xcodebuild -project MenuBarCat.xcodeproj -scheme MenuBarCat build
 ```
 
-Or open `MenuBarCat.xcodeproj` in Xcode and hit Run.
+or just open the `.xcodeproj` in Xcode and hit Run.
 
-## Controls
+## controls
 
-Click the pawprint in your menu bar:
+click the pawprint in your menu bar:
 
-| Action | Shortcut | What it does |
-|--------|----------|--------------|
-| Feed | Cmd+F | Fills hunger, cat meows |
-| Play | Cmd+P | Boosts happiness, uses energy |
-| Pet | Cmd+E | Happiness + energy, cat purrs |
-| Nap | Cmd+N | Cat sleeps, restores energy |
-| Wake Up | Cmd+W | Wakes a sleeping cat |
-| Rename | Cmd+R | Name your cat |
-| Buddy Cat | Cmd+B | Toggle companion cat on/off |
-| Focus Mode | Cmd+D | Block distracting websites |
-| Mute Sound | Cmd+M | Toggle all sounds |
+| action | shortcut | what happens |
+|--------|----------|-------------|
+| Feed | Cmd+F | fills hunger, grateful meow |
+| Play | Cmd+P | boosts happiness, burns energy |
+| Pet | Cmd+E | purring intensifies |
+| Nap | Cmd+N | zzz, energy recharges |
+| Wake Up | Cmd+W | interrupts his nap (rude) |
+| Rename | Cmd+R | he won't respond to it anyway |
+| Buddy Cat | Cmd+B | toggle the companion cat |
+| Focus Mode | Cmd+D | blocks distracting sites via cat violence |
+| Mute Sound | Cmd+M | silence the meowing |
 
-## How it works
+## how it actually works
 
-The cat lives in a transparent fullscreen window. The screen is divided into horizontal platforms - when the cursor is on a different level, the cat does diagonal hops (like jumping up stairs) to reach it, then walks the rest of the way.
+transparent fullscreen NSWindow. cat sprite walks around on it. screen is divided into horizontal platforms - cat does diagonal staircase hops to reach your cursor level, then walks horizontally.
 
-**Buddy cat** detects your frontmost app via NSWorkspace and reads browser tab URLs via AppleScript (first launch asks for automation permission). Each app/site gets a themed companion cat color.
+**buddy cat** reads your frontmost app via `NSWorkspace` and browser tab URLs via AppleScript (Chrome, Safari, Arc, Brave, Edge, Firefox). each app/site maps to a colored companion.
 
-**Focus mode** checks the active Chrome/Safari tab URL against a blocklist. When you're on a distracting site, the screen darkens and both cats start fighting until you leave.
+**focus mode** checks the active tab URL against a blocklist (instagram, youtube, reddit, tiktok, twitter, facebook, netflix, twitch, linkedin, threads). match = screen darkens, cats fight, mouse blocked. navigate away = peace restored.
 
-Needs (hunger, happiness, energy) decay every 30 seconds. If they get low, the cat meows at you. State is saved between launches via UserDefaults.
+stats decay every 30s. state persists via UserDefaults.
 
-## Permissions
+## permissions
 
-- **Automation** (one-time prompt) - to read browser tab URLs for buddy cat and focus mode
+first time you enable focus mode or use a browser, macOS asks to let macthecat control Chrome/Safari. say yes or the cat can't read your tabs and focus mode won't work.
 
-## Contributing
+## contributing
 
-Open source under the MIT license. PRs welcome - ideas:
+MIT licensed. PRs welcome:
 
-- More cat skins / sprite sheets
-- Multiple user cats
-- Cat toys that appear on screen
-- Launch at login
-- Custom blocklist for focus mode
-- Homebrew formula
+- more sprite sheets / skins
+- custom focus mode blocklist
+- multiple user cats
+- cat toys on screen
+- launch at login
+- homebrew formula
+- whatever weird cat feature you can think of
 
-## Credits
+## credits
 
-Built with [Claude Code](https://claude.ai/code). Cat sprites from the pixel art community.
+built with [Claude Code](https://claude.ai/code). sprite sheet from the pixel art community.
 
-## License
+## license
 
 MIT

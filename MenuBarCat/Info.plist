@@ -4,6 +4,10 @@
 <dict>
 	<key>LSUIElement</key>
 	<true/>
+	<key>CFBundleDisplayName</key>
+	<string>macthecat</string>
+	<key>CFBundleName</key>
+	<string>macthecat</string>
 	<key>NSAppleEventsUsageDescription</key>
 	<string>macthecat needs to check which website you're on to match your buddy cat and enable focus mode.</string>
 </dict>

@@ -233,7 +233,7 @@ class BuddyCatManager: ObservableObject {
 
     /// Trigger the macOS automation permission dialog for Chrome/Safari
     func requestBrowserAccess() {
-        // This will prompt "MenuBarCat wants to control Google Chrome"
+        // This will prompt "macthecat wants to control Google Chrome"
         let script = NSAppleScript(source: "tell application \"Google Chrome\" to get title of front window")
         var error: NSDictionary?
         script?.executeAndReturnError(&error)
