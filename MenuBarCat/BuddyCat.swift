@@ -125,7 +125,7 @@ class BuddyCatManager: ObservableObject {
     private var timer: Timer?
 
     init() {
-        self.isEnabled = UserDefaults.standard.object(forKey: "buddyCatEnabled") as? Bool ?? true
+        self.isEnabled = UserDefaults.standard.object(forKey: "buddyCatEnabled") as? Bool ?? false
         self.focusModeEnabled = UserDefaults.standard.object(forKey: "focusModeEnabled") as? Bool ?? false
         startWatching()
     }
@@ -195,13 +195,11 @@ class BuddyCatManager: ObservableObject {
         var tabURL: String?
         var tabTitle: String?
 
-        // Only call AppleScript for browsers
+        // Only call AppleScript when focus mode needs to check URLs
+        // Buddy cat uses window title from NSWorkspace (no permission needed)
         if isBrowser && focusModeEnabled {
             tabURL = getBrowserTabURL(bundleID: bundleID)
             tabTitle = getBrowserTabTitle(bundleID: bundleID)
-        } else if isBrowser && isEnabled {
-            tabTitle = getBrowserTabTitle(bundleID: bundleID)
-            tabURL = getBrowserTabURL(bundleID: bundleID)
         }
 
         // Focus mode: check URL, clear when not on distracting site or not in browser
@@ -224,10 +222,12 @@ class BuddyCatManager: ObservableObject {
             return
         }
 
-        let identifier = tabTitle ?? appName
+        // For buddy cat, use window title from frontmost app (no AppleScript needed)
+        let windowTitle = isBrowser ? (tabTitle ?? app.localizedName) : app.localizedName
+        let identifier = windowTitle ?? appName
         if identifier != currentAppName {
             currentAppName = identifier
-            currentBuddy = BuddyCatConfig.forApp(bundleID, windowTitle: tabTitle, tabURL: tabURL)
+            currentBuddy = BuddyCatConfig.forApp(bundleID, windowTitle: windowTitle, tabURL: tabURL)
         }
     }
 
