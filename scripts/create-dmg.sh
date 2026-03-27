@@ -9,7 +9,7 @@ PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 APP_NAME="MenuBarCat"
 VOL_NAME="macthecat"
 DMG_OUTPUT="$PROJECT_DIR/macthecat.dmg"
-BG_IMAGE="$PROJECT_DIR/dmg-background@2x.png"
+BG_IMAGE="$PROJECT_DIR/dmg-background.png"
 
 # Find the built .app
 APP_PATH=$(find ~/Library/Developer/Xcode/DerivedData -name "${APP_NAME}.app" -path "*/Build/Products/*" -type d 2>/dev/null | head -1)
