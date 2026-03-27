@@ -15,7 +15,6 @@ struct BuddyCatView: View {
     @State private var moveTimer: Timer?
     @State private var frameTimer: Timer?
     @State private var behaviorTimer: Timer?
-    @State private var appeared = false
     @State private var isHopping = false
 
     private let followDistance: CGFloat = 90
@@ -32,8 +31,6 @@ struct BuddyCatView: View {
                     .scaleEffect(x: facingRight ? 1 : -1, y: 1)
                     .position(x: x, y: y)
                     .onAppear {
-                        guard !appeared else { return }
-                        appeared = true
                         x = mainPos.x + 120
                         y = mainPos.y
                         startFrameLoop()
@@ -43,6 +40,11 @@ struct BuddyCatView: View {
                         frameTimer?.invalidate()
                         moveTimer?.invalidate()
                         behaviorTimer?.invalidate()
+                        frameTimer = nil
+                        moveTimer = nil
+                        behaviorTimer = nil
+                        isHopping = false
+                        action = .idle
                     }
             }
         }
@@ -82,12 +84,14 @@ struct BuddyCatView: View {
     }
 
     func startFrameLoop() {
+        frameTimer?.invalidate()
         frameTimer = Timer.scheduledTimer(withTimeInterval: 0.18, repeats: true) { _ in
             frame += 1
         }
     }
 
     func startFollowLoop() {
+        moveTimer?.invalidate()
         moveTimer = Timer.scheduledTimer(withTimeInterval: 0.15, repeats: true) { _ in
             // Safety: unstick after 1 second
             if isHopping {
