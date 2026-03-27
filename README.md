@@ -22,8 +22,9 @@ a pixel art pet that lives on your screen, chases your cursor like it owes him m
 ### download
 
 1. grab `macthecat.dmg` from [Releases](https://github.com/sameeeeeeep/maccat/releases)
-2. drag to Applications
-3. launch (right-click > Open if macOS gets suspicious)
+2. open the dmg — enjoy the fancy drag-to-install experience
+3. drag to Applications
+4. launch (right-click > Open if macOS gets suspicious)
 
 ### build from source
 
@@ -34,6 +35,15 @@ xcodebuild -project MenuBarCat.xcodeproj -scheme MenuBarCat build
 ```
 
 or just open the `.xcodeproj` in Xcode and hit Run.
+
+### build the dmg
+
+```bash
+brew install create-dmg
+./scripts/create-dmg.sh
+```
+
+builds a branded dmg with custom background, drag arrow, the whole nine yards.
 
 ## controls
 
