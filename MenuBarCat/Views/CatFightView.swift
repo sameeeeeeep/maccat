@@ -16,12 +16,13 @@ class FightTimers: ObservableObject {
     deinit { stopAll() }
 }
 
-/// Two cats fighting when user is on a distracting site in focus mode
+/// Two pets fighting when user is on a distracting site in focus mode
 struct CatFightView: View {
     let catColor: Color
     let buddyColor: Color
     let screenWidth: CGFloat
     let screenHeight: CGFloat
+    var animalTheme: AnimalTheme = .cat
 
     @State private var frame: Int = 0
     @State private var fightPhase: Int = 0
@@ -32,19 +33,19 @@ struct CatFightView: View {
 
     var body: some View {
         ZStack {
-            // Your cat
+            // Your pet
             fightSprite(color: catColor)
                 .scaleEffect(x: 1, y: 1)
                 .offset(x: shakeOffset)
                 .position(x: catX, y: screenHeight / 2)
 
-            // Buddy cat
+            // Buddy pet
             fightSprite(color: buddyColor)
                 .scaleEffect(x: -1, y: 1)
                 .offset(x: -shakeOffset)
                 .position(x: buddyX, y: screenHeight / 2)
 
-            Text("get back to work")
+            Text(animalTheme.focusModeText)
                 .font(.system(size: 18, weight: .medium, design: .rounded))
                 .foregroundColor(.white.opacity(0.7))
                 .position(x: screenWidth / 2, y: screenHeight / 2 - 80)
@@ -76,11 +77,16 @@ struct CatFightView: View {
     }
 
     func spriteImage(_ name: String) -> Image {
-        if let path = Bundle.main.path(forResource: name, ofType: "png", inDirectory: "Sprites"),
+        let themeDir = animalTheme.spriteDirectory
+        if let path = Bundle.main.path(forResource: name, ofType: "png", inDirectory: themeDir),
            let nsImage = NSImage(contentsOfFile: path) {
             return Image(nsImage: nsImage)
         }
-        return Image(systemName: "cat.fill")
+        if let path = Bundle.main.path(forResource: name, ofType: "png", inDirectory: AnimalTheme.fallbackSpriteDirectory),
+           let nsImage = NSImage(contentsOfFile: path) {
+            return Image(nsImage: nsImage)
+        }
+        return Image(systemName: animalTheme.menuBarIcon)
     }
 
     func startFight() {
@@ -92,11 +98,11 @@ struct CatFightView: View {
         })
 
         fightPhase = 0
-        SoundManager.shared.play("hiss", volume: 0.5)
+        SoundManager.shared.play(animalTheme.fightSound, volume: 0.5)
 
         timers.add(Timer.scheduledTimer(withTimeInterval: 1.5, repeats: false) { [self] _ in
             fightPhase = 1
-            SoundManager.shared.randomMeow(volume: 0.5)
+            SoundManager.shared.randomVoice(theme: animalTheme, volume: 0.5)
             withAnimation(.easeInOut(duration: 1.2)) {
                 catX = screenWidth / 2 - 40
                 buddyX = screenWidth / 2 + 40
@@ -104,7 +110,7 @@ struct CatFightView: View {
 
             timers.add(Timer.scheduledTimer(withTimeInterval: 1.3, repeats: false) { _ in
                 fightPhase = 2
-                SoundManager.shared.play("hiss", volume: 0.6)
+                SoundManager.shared.play(animalTheme.fightSound, volume: 0.6)
                 loopFight()
             })
         })
@@ -113,9 +119,9 @@ struct CatFightView: View {
     func loopFight() {
         timers.add(Timer.scheduledTimer(withTimeInterval: 2.0, repeats: true) { _ in
             if Bool.random() {
-                SoundManager.shared.play("hiss", volume: 0.4)
+                SoundManager.shared.play(animalTheme.fightSound, volume: 0.4)
             } else {
-                SoundManager.shared.randomMeow(volume: 0.5)
+                SoundManager.shared.randomVoice(theme: animalTheme, volume: 0.5)
             }
 
             withAnimation(.easeInOut(duration: 0.4)) {
@@ -123,7 +129,7 @@ struct CatFightView: View {
                 buddyX = screenWidth / 2 + CGFloat.random(in: 60...120)
             }
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-                SoundManager.shared.play("hiss", volume: 0.3)
+                SoundManager.shared.play(animalTheme.fightSound, volume: 0.3)
                 withAnimation(.easeInOut(duration: 0.5)) {
                     catX = screenWidth / 2 - CGFloat.random(in: 20...45)
                     buddyX = screenWidth / 2 + CGFloat.random(in: 20...45)

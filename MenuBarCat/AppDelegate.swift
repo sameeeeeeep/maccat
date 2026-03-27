@@ -12,18 +12,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         catState = CatState()
         buddyManager = BuddyCatManager()
 
-        // Create the status bar item - white paw
+        // Create the status bar item
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-        if let button = statusItem.button {
-            let config = NSImage.SymbolConfiguration(pointSize: 16, weight: .medium)
-            if let img = NSImage(systemSymbolName: "pawprint.fill", accessibilityDescription: "macthecat")?.withSymbolConfiguration(config) {
-                img.isTemplate = true  // adapts to light/dark menu bar
-                button.image = img
-            } else {
-                button.title = "~"
-                button.font = NSFont.systemFont(ofSize: 14)
-            }
-        }
+        updateStatusBarIcon()
 
         // Build the menu
         let menu = NSMenu()
@@ -75,12 +66,48 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         wakeItem.target = self
         menu.addItem(wakeItem)
 
+        let toyItem = NSMenuItem(title: "Drop Toy", action: #selector(dropToy), keyEquivalent: "t")
+        toyItem.target = self
+        menu.addItem(toyItem)
+
+        // Focus timer submenu
+        let timerItem = NSMenuItem(title: "Focus Timer", action: nil, keyEquivalent: "")
+        let timerMenu = NSMenu()
+        for mins in [5, 10, 15, 25, 30, 45, 60] {
+            let label = mins < 60 ? "\(mins) min" : "1 hour"
+            let item = NSMenuItem(title: label, action: #selector(startTimer(_:)), keyEquivalent: "")
+            item.target = self
+            item.tag = mins
+            timerMenu.addItem(item)
+        }
+        timerMenu.addItem(NSMenuItem.separator())
+        let cancelItem = NSMenuItem(title: "Cancel Timer", action: #selector(cancelTimer), keyEquivalent: "")
+        cancelItem.target = self
+        cancelItem.tag = 400
+        timerMenu.addItem(cancelItem)
+        timerItem.submenu = timerMenu
+        timerItem.tag = 401
+        menu.addItem(timerItem)
+
         menu.addItem(NSMenuItem.separator())
 
         // Rename
         let renameItem = NSMenuItem(title: "Rename...", action: #selector(renameCat), keyEquivalent: "r")
         renameItem.target = self
         menu.addItem(renameItem)
+
+        // Theme submenu
+        let themeItem = NSMenuItem(title: "Theme", action: nil, keyEquivalent: "")
+        let themeMenu = NSMenu()
+        for theme in AnimalTheme.allCases {
+            let item = NSMenuItem(title: "\(themeMenuEmoji(theme)) \(theme.displayName)", action: #selector(changeTheme(_:)), keyEquivalent: "")
+            item.target = self
+            item.representedObject = theme.rawValue
+            item.tag = 300 + AnimalTheme.allCases.firstIndex(of: theme)!
+            themeMenu.addItem(item)
+        }
+        themeItem.submenu = themeMenu
+        menu.addItem(themeItem)
 
         // Color submenu
         let colorItem = NSMenuItem(title: "Color", action: nil, keyEquivalent: "")
@@ -107,7 +134,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         menu.addItem(NSMenuItem.separator())
 
         // Buddy cat toggle
-        let buddyItem = NSMenuItem(title: "Buddy Cat", action: #selector(toggleBuddy(_:)), keyEquivalent: "b")
+        let buddyItem = NSMenuItem(title: "Buddy", action: #selector(toggleBuddy(_:)), keyEquivalent: "b")
         buddyItem.target = self
         buddyItem.tag = 200
         menu.addItem(buddyItem)
@@ -137,6 +164,28 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         catWindow.orderFront(nil)
     }
 
+    func updateStatusBarIcon() {
+        if let button = statusItem.button {
+            let symbolName = catState.animalTheme.statusBarSymbol
+            let config = NSImage.SymbolConfiguration(pointSize: 16, weight: .medium)
+            if let img = NSImage(systemSymbolName: symbolName, accessibilityDescription: "macthecat")?.withSymbolConfiguration(config) {
+                img.isTemplate = true
+                button.image = img
+            } else {
+                button.title = "~"
+                button.font = NSFont.systemFont(ofSize: 14)
+            }
+        }
+    }
+
+    func themeMenuEmoji(_ theme: AnimalTheme) -> String {
+        switch theme {
+        case .cat: return "🐱"
+        case .dog: return "🐶"
+        case .bird: return "🐦"
+        }
+    }
+
     // MARK: - Actions
 
     @objc func feedCat() { catState.feed() }
@@ -145,9 +194,35 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @objc func napCat() { catState.nap() }
     @objc func wakeCat() { catState.wake() }
 
+    @objc func startTimer(_ sender: NSMenuItem) {
+        catState.startFocusTimer(minutes: sender.tag)
+    }
+
+    @objc func cancelTimer() {
+        catState.cancelFocusTimer()
+    }
+
+    @objc func dropToy() {
+        let toys: [String]
+        switch catState.animalTheme {
+        case .cat: toys = ["🧶", "🐟", "🪶", "🐭"]
+        case .dog: toys = ["🎾", "🦴", "🥏", "🧸"]
+        case .bird: toys = ["🪱", "🌻", "🫐", "🪺"]
+        }
+        catState.pendingToy = toys.randomElement()!
+    }
+
     @objc func changeColor(_ sender: NSMenuItem) {
         if let color = sender.representedObject as? String {
             catState.catColor = color
+        }
+    }
+
+    @objc func changeTheme(_ sender: NSMenuItem) {
+        if let themeRaw = sender.representedObject as? String,
+           let theme = AnimalTheme(rawValue: themeRaw) {
+            catState.animalTheme = theme
+            updateStatusBarIcon()
         }
     }
 
@@ -169,7 +244,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     @objc func renameCat() {
         let alert = NSAlert()
-        alert.messageText = "Rename your cat"
+        alert.messageText = "Rename your \(catState.animalTheme.displayName.lowercased())"
         alert.informativeText = "Enter a new name:"
         alert.addButton(withTitle: "OK")
         alert.addButton(withTitle: "Cancel")
@@ -191,6 +266,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
 extension AppDelegate: NSMenuDelegate {
     func menuWillOpen(_ menu: NSMenu) {
+        let theme = catState.animalTheme
         if let header = menu.items.first {
             header.title = "\(catState.name) - \(catState.mood.rawValue)"
         }
@@ -212,6 +288,24 @@ extension AppDelegate: NSMenuDelegate {
         if let soundItem = menu.item(withTag: 201) {
             soundItem.title = SoundManager.shared.isMuted ? "Unmute Sound" : "Mute Sound"
             soundItem.state = SoundManager.shared.isMuted ? .on : .off
+        }
+        // Update timer menu
+        if let timerItem = menu.item(withTag: 401) {
+            if catState.isFocusTimerActive {
+                timerItem.title = "Focus Timer (\(catState.focusTimerText))"
+            } else {
+                timerItem.title = "Focus Timer"
+            }
+            // Enable/disable cancel
+            if let sub = timerItem.submenu, let cancel = sub.item(withTag: 400) {
+                cancel.isEnabled = catState.isFocusTimerActive
+            }
+        }
+        // Update theme checkmarks
+        for (index, animalTheme) in AnimalTheme.allCases.enumerated() {
+            if let themeItem = menu.item(withTag: 300 + index) {
+                themeItem.state = animalTheme == theme ? .on : .off
+            }
         }
     }
 }

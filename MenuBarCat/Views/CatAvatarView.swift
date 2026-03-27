@@ -6,12 +6,24 @@ struct CatAvatarView: View {
     @State private var wiggleAngle: Double = 0
     @State private var eyeBlink: Bool = false
     @State private var tailAngle: Double = -20
+    @State private var tongueOut: Bool = false
 
     var body: some View {
         ZStack {
-            catBody
-                .offset(y: bounceOffset)
-                .rotationEffect(.degrees(wiggleAngle))
+            switch cat.animalTheme {
+            case .cat:
+                catBody
+                    .offset(y: bounceOffset)
+                    .rotationEffect(.degrees(wiggleAngle))
+            case .dog:
+                dogBody
+                    .offset(y: bounceOffset)
+                    .rotationEffect(.degrees(wiggleAngle))
+            case .bird:
+                birdBody
+                    .offset(y: bounceOffset)
+                    .rotationEffect(.degrees(wiggleAngle))
+            }
         }
         .frame(width: 120, height: 120)
         .onChange(of: cat.isAnimating) { animating in
@@ -24,36 +36,38 @@ struct CatAvatarView: View {
         }
     }
 
+    // MARK: - Cat Avatar
+
     var catBody: some View {
         ZStack {
             // Body
             Ellipse()
-                .fill(catColor)
+                .fill(cat.animalTheme.avatarBodyColor)
                 .frame(width: 70, height: 50)
                 .offset(y: 20)
 
             // Tail
             TailShape()
-                .stroke(catColor, style: StrokeStyle(lineWidth: 6, lineCap: .round))
+                .stroke(cat.animalTheme.avatarBodyColor, style: StrokeStyle(lineWidth: 6, lineCap: .round))
                 .frame(width: 30, height: 25)
                 .rotationEffect(.degrees(tailAngle), anchor: .bottomLeading)
                 .offset(x: 35, y: 15)
 
             // Head
             Circle()
-                .fill(catColor)
+                .fill(cat.animalTheme.avatarBodyColor)
                 .frame(width: 55, height: 55)
                 .offset(y: -10)
 
             // Left ear
             EarShape()
-                .fill(catColor)
+                .fill(cat.animalTheme.avatarBodyColor)
                 .frame(width: 18, height: 22)
                 .offset(x: -16, y: -35)
 
             // Right ear
             EarShape()
-                .fill(catColor)
+                .fill(cat.animalTheme.avatarBodyColor)
                 .frame(width: 18, height: 22)
                 .offset(x: 16, y: -35)
 
@@ -95,24 +109,176 @@ struct CatAvatarView: View {
         }
     }
 
-    var catColor: Color {
-        Color.orange
+    // MARK: - Dog Avatar
+
+    var dogBody: some View {
+        let bodyColor = cat.animalTheme.avatarBodyColor
+        let accentColor = cat.animalTheme.avatarAccentColor
+        return ZStack {
+            // Body
+            Ellipse()
+                .fill(bodyColor)
+                .frame(width: 70, height: 50)
+                .offset(y: 20)
+
+            // Tail (curly, thicker)
+            DogTailShape()
+                .stroke(bodyColor, style: StrokeStyle(lineWidth: 7, lineCap: .round))
+                .frame(width: 25, height: 30)
+                .rotationEffect(.degrees(tailAngle), anchor: .bottomLeading)
+                .offset(x: 38, y: 10)
+
+            // Head (rounder, slightly bigger)
+            Ellipse()
+                .fill(bodyColor)
+                .frame(width: 58, height: 55)
+                .offset(y: -10)
+
+            // Snout
+            Ellipse()
+                .fill(accentColor.opacity(0.6))
+                .frame(width: 28, height: 20)
+                .offset(y: 2)
+
+            // Floppy left ear
+            FloppyEarShape()
+                .fill(accentColor)
+                .frame(width: 16, height: 28)
+                .rotationEffect(.degrees(-15))
+                .offset(x: -24, y: -18)
+
+            // Floppy right ear
+            FloppyEarShape()
+                .fill(accentColor)
+                .frame(width: 16, height: 28)
+                .rotationEffect(.degrees(15))
+                .offset(x: 24, y: -18)
+
+            // Eyes
+            eyesView
+                .offset(y: -12)
+
+            // Nose (bigger, black)
+            Ellipse()
+                .fill(Color.black)
+                .frame(width: 8, height: 6)
+                .offset(y: -1)
+
+            // Tongue (when happy/playing)
+            if tongueOut || cat.mood == .happy || cat.mood == .playing {
+                RoundedRectangle(cornerRadius: 3)
+                    .fill(Color.pink)
+                    .frame(width: 8, height: 12)
+                    .offset(x: 3, y: 10)
+            }
+
+            // Action text
+            if let text = cat.actionText {
+                Text(text)
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundColor(.primary)
+                    .offset(y: -55)
+                    .transition(.scale.combined(with: .opacity))
+            }
+        }
     }
+
+    // MARK: - Bird Avatar
+
+    var birdBody: some View {
+        let bodyColor = cat.animalTheme.avatarBodyColor
+        let accentColor = cat.animalTheme.avatarAccentColor
+        return ZStack {
+            // Body (round)
+            Ellipse()
+                .fill(bodyColor)
+                .frame(width: 55, height: 45)
+                .offset(y: 15)
+
+            // Wing
+            WingShape()
+                .fill(bodyColor.opacity(0.7))
+                .frame(width: 30, height: 25)
+                .rotationEffect(.degrees(tailAngle * 0.5))
+                .offset(x: 20, y: 10)
+
+            // Tail feathers
+            EarShape()
+                .fill(bodyColor.opacity(0.8))
+                .frame(width: 14, height: 20)
+                .rotationEffect(.degrees(150))
+                .offset(x: -30, y: 20)
+
+            // Head
+            Circle()
+                .fill(bodyColor)
+                .frame(width: 42, height: 42)
+                .offset(y: -12)
+
+            // Beak
+            EarShape()
+                .fill(Color.orange)
+                .frame(width: 12, height: 10)
+                .rotationEffect(.degrees(90))
+                .offset(x: 22, y: -5)
+
+            // Eye
+            if eyeBlink {
+                Text("—").font(.system(size: 8, weight: .bold))
+                    .offset(x: 5, y: -15)
+            } else {
+                ZStack {
+                    Circle().fill(Color.white).frame(width: 12, height: 12)
+                    Circle().fill(Color.black).frame(width: 6, height: 6)
+                        .offset(x: 1)
+                    Circle().fill(Color.white).frame(width: 2, height: 2)
+                        .offset(x: 2, y: -1)
+                }
+                .offset(x: 5, y: -15)
+            }
+
+            // Chest marking
+            Ellipse()
+                .fill(accentColor.opacity(0.3))
+                .frame(width: 30, height: 25)
+                .offset(y: 12)
+
+            // Feet
+            HStack(spacing: 8) {
+                BirdFootShape()
+                    .stroke(Color.orange, style: StrokeStyle(lineWidth: 2, lineCap: .round))
+                    .frame(width: 10, height: 8)
+                BirdFootShape()
+                    .stroke(Color.orange, style: StrokeStyle(lineWidth: 2, lineCap: .round))
+                    .frame(width: 10, height: 8)
+            }
+            .offset(y: 38)
+
+            // Action text
+            if let text = cat.actionText {
+                Text(text)
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundColor(.primary)
+                    .offset(y: -55)
+                    .transition(.scale.combined(with: .opacity))
+            }
+        }
+    }
+
+
+    // MARK: - Shared Eye/Mouth Views
 
     @ViewBuilder
     var eyesView: some View {
         HStack(spacing: 14) {
             switch cat.mood {
             case .sleeping:
-                // Closed eyes
                 Text("—").font(.system(size: 10, weight: .bold))
                 Text("—").font(.system(size: 10, weight: .bold))
             case .happy, .playing:
-                // Happy squint eyes
                 Text("◠").font(.system(size: 14))
                 Text("◠").font(.system(size: 14))
             case .sad, .hungry:
-                // Sad eyes
                 Group {
                     Circle().fill(Color.black).frame(width: 8, height: 8)
                         .overlay(
@@ -126,7 +292,6 @@ struct CatAvatarView: View {
                         )
                 }
             default:
-                // Normal eyes with blink
                 if eyeBlink {
                     Text("—").font(.system(size: 10, weight: .bold))
                     Text("—").font(.system(size: 10, weight: .bold))
@@ -154,7 +319,6 @@ struct CatAvatarView: View {
 
     var whiskers: some View {
         Group {
-            // Left whiskers
             WhiskerLine()
                 .stroke(Color.gray.opacity(0.5), lineWidth: 1)
                 .frame(width: 20, height: 1)
@@ -165,7 +329,6 @@ struct CatAvatarView: View {
                 .frame(width: 20, height: 1)
                 .rotationEffect(.degrees(10))
                 .offset(x: -28, y: 5)
-            // Right whiskers
             WhiskerLine()
                 .stroke(Color.gray.opacity(0.5), lineWidth: 1)
                 .frame(width: 20, height: 1)
@@ -178,6 +341,8 @@ struct CatAvatarView: View {
                 .offset(x: 28, y: 5)
         }
     }
+
+    // MARK: - Animations
 
     func startBounce() {
         withAnimation(.easeInOut(duration: 0.15).repeatCount(6, autoreverses: true)) {
@@ -196,10 +361,14 @@ struct CatAvatarView: View {
                 eyeBlink = false
             }
         }
-        // Tail wag
+        // Tail wag / tongue flick
         Timer.scheduledTimer(withTimeInterval: 2, repeats: true) { _ in
             withAnimation(.easeInOut(duration: 0.5).repeatCount(3, autoreverses: true)) {
                 tailAngle = 20
+            }
+            // Dog tongue toggle
+            if cat.animalTheme == .dog {
+                tongueOut.toggle()
             }
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
                 withAnimation { tailAngle = -20 }
@@ -242,3 +411,73 @@ struct WhiskerLine: Shape {
         return path
     }
 }
+
+// MARK: - Dog Shapes
+
+struct FloppyEarShape: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        path.move(to: CGPoint(x: rect.midX, y: rect.minY))
+        path.addCurve(
+            to: CGPoint(x: rect.midX, y: rect.maxY),
+            control1: CGPoint(x: rect.maxX + 4, y: rect.midY * 0.5),
+            control2: CGPoint(x: rect.maxX, y: rect.maxY)
+        )
+        path.addCurve(
+            to: CGPoint(x: rect.midX, y: rect.minY),
+            control1: CGPoint(x: rect.minX, y: rect.maxY),
+            control2: CGPoint(x: rect.minX - 4, y: rect.midY * 0.5)
+        )
+        path.closeSubpath()
+        return path
+    }
+}
+
+struct DogTailShape: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        path.move(to: CGPoint(x: rect.minX, y: rect.maxY))
+        path.addCurve(
+            to: CGPoint(x: rect.maxX, y: rect.minY),
+            control1: CGPoint(x: rect.maxX, y: rect.maxY + 10),
+            control2: CGPoint(x: rect.minX, y: rect.minY - 5)
+        )
+        return path
+    }
+}
+
+// MARK: - Bird Shapes
+
+struct WingShape: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        path.move(to: CGPoint(x: rect.minX, y: rect.midY))
+        path.addCurve(
+            to: CGPoint(x: rect.maxX, y: rect.minY),
+            control1: CGPoint(x: rect.midX, y: rect.maxY),
+            control2: CGPoint(x: rect.maxX, y: rect.midY)
+        )
+        path.addCurve(
+            to: CGPoint(x: rect.minX, y: rect.midY),
+            control1: CGPoint(x: rect.maxX, y: rect.minY - 5),
+            control2: CGPoint(x: rect.midX, y: rect.minY)
+        )
+        path.closeSubpath()
+        return path
+    }
+}
+
+struct BirdFootShape: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        path.move(to: CGPoint(x: rect.midX, y: rect.minY))
+        path.addLine(to: CGPoint(x: rect.midX, y: rect.midY))
+        path.addLine(to: CGPoint(x: rect.minX, y: rect.maxY))
+        path.move(to: CGPoint(x: rect.midX, y: rect.midY))
+        path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
+        path.move(to: CGPoint(x: rect.midX, y: rect.midY))
+        path.addLine(to: CGPoint(x: rect.midX, y: rect.maxY))
+        return path
+    }
+}
+

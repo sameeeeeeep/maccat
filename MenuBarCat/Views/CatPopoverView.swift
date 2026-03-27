@@ -27,7 +27,7 @@ struct CatPopoverView: View {
 
                 Spacer()
 
-                Text(cat.mood.emoji + " " + cat.mood.rawValue)
+                Text(cat.animalTheme.moodEmoji(for: cat.mood) + " " + cat.mood.rawValue)
                     .font(.system(size: 12))
                     .foregroundColor(.secondary)
                     .padding(.horizontal, 8)
@@ -46,7 +46,7 @@ struct CatPopoverView: View {
 
             // Need bars
             VStack(spacing: 6) {
-                NeedsBarView(label: "Hunger", icon: "🐟", value: cat.hunger, color: .green)
+                NeedsBarView(label: "Hunger", icon: cat.animalTheme.hungerIcon, value: cat.hunger, color: .green)
                 NeedsBarView(label: "Happiness", icon: "💖", value: cat.happiness, color: .pink)
                 NeedsBarView(label: "Energy", icon: "⚡", value: cat.energy, color: .blue)
             }

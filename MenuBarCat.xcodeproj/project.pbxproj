@@ -22,6 +22,7 @@
 		A8D7DF2699FB423B82B5F976 /* BuddyCat.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB479062407941FE8629AE2A /* BuddyCat.swift */; };
 		D0FD9391811E4BD994D6C454 /* BuddyCatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97048AA5D52A410C827BA27C /* BuddyCatView.swift */; };
 		60E637EB82254BCC82942561 /* CatFightView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74E0C4F6BE044EB2A133D9DB /* CatFightView.swift */; };
+		ANIM0001 /* AnimalTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = ANIM0002 /* AnimalTheme.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -42,6 +43,7 @@
 		EB479062407941FE8629AE2A /* BuddyCat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuddyCat.swift; sourceTree = "<group>"; };
 		97048AA5D52A410C827BA27C /* BuddyCatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuddyCatView.swift; sourceTree = "<group>"; };
 		74E0C4F6BE044EB2A133D9DB /* CatFightView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatFightView.swift; sourceTree = "<group>"; };
+		ANIM0002 /* AnimalTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimalTheme.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,6 +85,7 @@
 			isa = PBXGroup;
 			children = (
 				BBB00003 /* CatState.swift */,
+				ANIM0002 /* AnimalTheme.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -196,6 +199,7 @@
 				AAA00008 /* WalkingCatView.swift in Sources */,
 				AAA00009 /* CatWindow.swift in Sources */,
 				AAA00011 /* SoundManager.swift in Sources */,
+				ANIM0001 /* AnimalTheme.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -1,9 +1,10 @@
 import SwiftUI
 
-/// A companion cat that follows the player's cat and interacts with it
+/// A companion that follows the player's pet and interacts with it
 struct BuddyCatView: View {
     @ObservedObject var buddyManager: BuddyCatManager
     @ObservedObject var mainPos: MainCatPosition
+    var animalTheme: AnimalTheme = .cat
     let screenWidth: CGFloat
     let screenHeight: CGFloat
 
@@ -26,7 +27,7 @@ struct BuddyCatView: View {
                 spriteImage
                     .interpolation(.none)
                     .resizable()
-                    .frame(width: 56, height: 56)
+                    .frame(width: animalTheme.buddySpriteSize, height: animalTheme.buddySpriteSize)
                     .colorMultiply(buddy.color)
                     .scaleEffect(x: facingRight ? 1 : -1, y: 1)
                     .position(x: x, y: y)
@@ -52,11 +53,16 @@ struct BuddyCatView: View {
 
     var spriteImage: Image {
         let name = spriteNameForAction()
-        if let path = Bundle.main.path(forResource: name, ofType: "png", inDirectory: "Sprites"),
+        let themeDir = animalTheme.spriteDirectory
+        if let path = Bundle.main.path(forResource: name, ofType: "png", inDirectory: themeDir),
            let nsImage = NSImage(contentsOfFile: path) {
             return Image(nsImage: nsImage)
         }
-        return Image(systemName: "cat.fill")
+        if let path = Bundle.main.path(forResource: name, ofType: "png", inDirectory: AnimalTheme.fallbackSpriteDirectory),
+           let nsImage = NSImage(contentsOfFile: path) {
+            return Image(nsImage: nsImage)
+        }
+        return Image(systemName: animalTheme.menuBarIcon)
     }
 
     func spriteNameForAction() -> String {
@@ -136,9 +142,9 @@ struct BuddyCatView: View {
                 // Random fight sounds
                 if Int.random(in: 0...12) == 0 {
                     if Bool.random() {
-                        SoundManager.shared.play("hiss", volume: 0.3)
+                        SoundManager.shared.play(animalTheme.fightSound, volume: 0.3)
                     } else {
-                        SoundManager.shared.randomMeow(volume: 0.4)
+                        SoundManager.shared.randomVoice(theme: animalTheme, volume: 0.4)
                     }
                 }
             }

@@ -1,6 +1,17 @@
 import SwiftUI
 import Cocoa
 
+extension View {
+    @ViewBuilder
+    func `if`<Transform: View>(_ condition: Bool, transform: (Self) -> Transform) -> some View {
+        if condition {
+            transform(self)
+        } else {
+            self
+        }
+    }
+}
+
 enum CatAction: Equatable {
     case idle          // sit_0-3
     case sitting       // sit_alt_0-3
@@ -18,6 +29,14 @@ class MainCatPosition: ObservableObject {
     @Published var x: CGFloat = 300
     @Published var y: CGFloat = 600
     @Published var action: CatAction = .idle
+}
+
+/// A toy dropped on screen for the pet to chase
+struct PetToy: Identifiable {
+    let id = UUID()
+    var x: CGFloat
+    var y: CGFloat
+    let emoji: String
 }
 
 struct WalkingCatView: View {
@@ -38,6 +57,31 @@ struct WalkingCatView: View {
     @State private var mouseTracker: Timer?
     @State private var mouseMonitor: Any?
 
+    // MARK: - Interaction State
+    @State private var isDragging: Bool = false
+    @State private var isTossed: Bool = false
+    @State private var tossVelX: CGFloat = 0
+    @State private var tossVelY: CGFloat = 0
+    @State private var tossTimer: Timer?
+    @State private var dragHistory: [(x: CGFloat, y: CGFloat, time: TimeInterval)] = []
+    @State private var clickMonitor: Any?
+    @State private var dragMonitor: Any?
+    @State private var upMonitor: Any?
+    @State private var squishScale: CGFloat = 1.0
+
+    // MARK: - Hearts
+    @State private var hearts: [(id: UUID, x: CGFloat, y: CGFloat, opacity: Double)] = []
+    @State private var heartTimer: Timer?
+
+    // MARK: - Focus Timer
+    @State private var focusTimerDisplay: String = ""
+    @State private var focusTimerTick: Timer?
+    @State private var wasFocusTimerActive: Bool = false
+
+    // MARK: - Toys
+    @State private var toys: [PetToy] = []
+    @State private var isChasingToy: Bool = false
+
     let screenWidth: CGFloat
     let screenHeight: CGFloat
     let platformHeight: CGFloat = 60
@@ -49,7 +93,7 @@ struct WalkingCatView: View {
                 Color.black.opacity(0.75)
                     .ignoresSafeArea()
 
-                Text("get back to work")
+                Text(cat.animalTheme.focusModeText)
                     .font(.system(size: 18, weight: .medium, design: .rounded))
                     .foregroundColor(.white.opacity(0.7))
                     .position(x: screenWidth / 2, y: screenHeight / 2 - 60)
@@ -64,7 +108,7 @@ struct WalkingCatView: View {
                     } else {
                         // Start fighting
                         catAction = .playing
-                        SoundManager.shared.play("hiss", volume: 0.5)
+                        SoundManager.shared.play(cat.animalTheme.fightSound, volume: 0.5)
                     }
                 }
                 .onChange(of: buddyManager.focusModeEnabled) { enabled in
@@ -83,10 +127,37 @@ struct WalkingCatView: View {
                     .animation(.spring(response: 0.3), value: cat.actionText)
             }
 
+            // Focus timer display
+            if cat.isFocusTimerActive {
+                Text(focusTimerDisplay)
+                    .font(.system(size: 11, weight: .semibold, design: .monospaced))
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 2)
+                    .background(Capsule().fill(Color.black.opacity(0.6)))
+                    .position(x: catX, y: catY - 45)
+            }
+
+            // Toys on screen
+            ForEach(toys) { toy in
+                Text(toy.emoji)
+                    .font(.system(size: 24))
+                    .position(x: toy.x, y: toy.y)
+            }
+
+            // Floating hearts
+            ForEach(hearts, id: \.id) { heart in
+                Text("💕")
+                    .font(.system(size: 16))
+                    .opacity(heart.opacity)
+                    .position(x: heart.x, y: heart.y)
+            }
+
             // Buddy cat
             BuddyCatView(
                 buddyManager: buddyManager,
                 mainPos: mainPos,
+                animalTheme: cat.animalTheme,
                 screenWidth: screenWidth,
                 screenHeight: screenHeight
             )
@@ -94,25 +165,40 @@ struct WalkingCatView: View {
             spriteImage
                 .interpolation(.none)
                 .resizable()
-                .frame(width: 72, height: 72)
-                .colorMultiply(catTintColor)
-                .scaleEffect(x: facingRight ? 1 : -1, y: 1)
+                .frame(width: cat.animalTheme.spriteSize, height: cat.animalTheme.spriteSize)
+                .if(!cat.animalTheme.hasColoredSprites) { view in
+                    view.colorMultiply(catTintColor)
+                }
+                .scaleEffect(x: facingRight ? 1 : -1, y: squishScale)
+                .scaleEffect(y: squishScale == 1.0 ? 1.0 : (2.0 - squishScale))  // widen when squished
                 .position(x: catX, y: catY)
                 .onAppear {
                     startAnimationLoop()
                     startBehaviorLoop()
                     startMouseTracking()
+                    startInteractionMonitors()
+                    startFocusTimerTick()
                 }
                 .onDisappear {
                     frameTimer?.invalidate()
                     idleTimer?.invalidate()
                     walkTimer?.invalidate()
                     mouseTracker?.invalidate()
+                    tossTimer?.invalidate()
+                    heartTimer?.invalidate()
+                    focusTimerTick?.invalidate()
                     if let m = mouseMonitor { NSEvent.removeMonitor(m) }
+                    removeInteractionMonitors()
                 }
                 .onChange(of: cat.activeAction) { action in
                     guard let action = action else { return }
                     handleAction(action)
+                }
+                .onChange(of: cat.pendingToy) { toy in
+                    if let toy = toy {
+                        dropToy(toy)
+                        cat.pendingToy = nil
+                    }
                 }
         }
         .frame(width: screenWidth, height: screenHeight)
@@ -129,7 +215,7 @@ struct WalkingCatView: View {
         case "blue": return Color(red: 0.6, green: 0.7, blue: 1.0)
         case "pink": return Color(red: 1.0, green: 0.7, blue: 0.8)
         case "golden": return Color(red: 1.0, green: 0.85, blue: 0.4)
-        default: return .white // original = no tint
+        default: return cat.animalTheme.defaultTint // theme-specific default
         }
     }
 
@@ -137,11 +223,18 @@ struct WalkingCatView: View {
 
     var spriteImage: Image {
         let name = spriteNameForAction()
-        let path = Bundle.main.path(forResource: name, ofType: "png", inDirectory: "Sprites")
-        if let path = path, let nsImage = NSImage(contentsOfFile: path) {
+        // Try theme-specific sprites first, fall back to cat sprites
+        let themeDir = cat.animalTheme.spriteDirectory
+        if let path = Bundle.main.path(forResource: name, ofType: "png", inDirectory: themeDir),
+           let nsImage = NSImage(contentsOfFile: path) {
             return Image(nsImage: nsImage)
         }
-        return Image(systemName: "cat.fill")
+        // Fallback to default sprites
+        if let path = Bundle.main.path(forResource: name, ofType: "png", inDirectory: AnimalTheme.fallbackSpriteDirectory),
+           let nsImage = NSImage(contentsOfFile: path) {
+            return Image(nsImage: nsImage)
+        }
+        return Image(systemName: cat.animalTheme.menuBarIcon)
     }
 
     func spriteNameForAction() -> String {
@@ -181,12 +274,286 @@ struct WalkingCatView: View {
         }
     }
 
+    // MARK: - Click / Drag / Toss Interactions
+
+    func startInteractionMonitors() {
+        // Mouse down - check if near pet to start drag or click-to-pet
+        clickMonitor = NSEvent.addGlobalMonitorForEvents(matching: .leftMouseDown) { event in
+            let screen = NSScreen.main!
+            let mouseX = event.locationInWindow.x
+            let mouseY = screen.frame.height - event.locationInWindow.y
+
+            let dx = mouseX - catX
+            let dy = mouseY - catY
+            let dist = sqrt(dx * dx + dy * dy)
+
+            if dist < 50 {
+                // Start drag
+                isDragging = true
+                isTossed = false
+                tossTimer?.invalidate()
+                idleTimer?.invalidate()
+                walkTimer?.invalidate()
+                isFollowingMouse = false
+                catAction = .jumping
+                dragHistory = [(x: mouseX, y: mouseY, time: ProcessInfo.processInfo.systemUptime)]
+            }
+        }
+
+        // Mouse dragged - move pet with cursor
+        dragMonitor = NSEvent.addGlobalMonitorForEvents(matching: .leftMouseDragged) { event in
+            guard isDragging else { return }
+            let screen = NSScreen.main!
+            let mouseX = event.locationInWindow.x
+            let mouseY = screen.frame.height - event.locationInWindow.y
+
+            catX = mouseX
+            catY = mouseY
+            catAction = .jumping
+
+            let now = ProcessInfo.processInfo.systemUptime
+            dragHistory.append((x: mouseX, y: mouseY, time: now))
+            // Keep last 5 samples for velocity calculation
+            if dragHistory.count > 5 {
+                dragHistory.removeFirst()
+            }
+        }
+
+        // Mouse up - release pet with velocity
+        upMonitor = NSEvent.addGlobalMonitorForEvents(matching: .leftMouseUp) { event in
+            guard isDragging else { return }
+            isDragging = false
+
+            let screen = NSScreen.main!
+            let mouseX = event.locationInWindow.x
+            let mouseY = screen.frame.height - event.locationInWindow.y
+
+            // Calculate velocity from drag history
+            if dragHistory.count >= 2 {
+                let recent = dragHistory.last!
+                let older = dragHistory.first!
+                let dt = recent.time - older.time
+                if dt > 0.01 {
+                    tossVelX = (recent.x - older.x) / CGFloat(dt) * 0.016  // per-frame velocity
+                    tossVelY = (recent.y - older.y) / CGFloat(dt) * 0.016
+                    // Clamp max velocity
+                    tossVelX = max(-25, min(25, tossVelX))
+                    tossVelY = max(-25, min(25, tossVelY))
+                    startTossPhysics()
+                } else {
+                    // No real drag, treat as click-to-pet
+                    clickPet()
+                }
+            } else {
+                clickPet()
+            }
+            dragHistory = []
+        }
+    }
+
+    func removeInteractionMonitors() {
+        if let m = clickMonitor { NSEvent.removeMonitor(m) }
+        if let m = dragMonitor { NSEvent.removeMonitor(m) }
+        if let m = upMonitor { NSEvent.removeMonitor(m) }
+    }
+
+    func clickPet() {
+        // Trigger pet reaction
+        cat.pet()
+        spawnHearts()
+    }
+
+    func spawnHearts() {
+        let baseX = catX
+        let baseY = catY - 30
+        for i in 0..<3 {
+            let heartID = UUID()
+            let offsetX = CGFloat.random(in: -20...20)
+            let heart = (id: heartID, x: baseX + offsetX, y: baseY - CGFloat(i * 12), opacity: 1.0)
+            hearts.append(heart)
+        }
+
+        // Animate hearts floating up and fading
+        heartTimer?.invalidate()
+        var elapsed = 0
+        heartTimer = Timer.scheduledTimer(withTimeInterval: 0.05, repeats: true) { timer in
+            elapsed += 1
+            for i in hearts.indices {
+                hearts[i].y -= 1.5
+                hearts[i].opacity = max(0, hearts[i].opacity - 0.03)
+            }
+            hearts.removeAll { $0.opacity <= 0 }
+            if hearts.isEmpty {
+                timer.invalidate()
+            }
+        }
+    }
+
+    // MARK: - Focus Timer
+
+    func startFocusTimerTick() {
+        focusTimerTick = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
+            let isActive = cat.isFocusTimerActive
+
+            if isActive {
+                focusTimerDisplay = cat.focusTimerText
+
+                // Keep pet sitting still during focus
+                if !isDragging && !isTossed {
+                    if catAction != .idle && catAction != .sitting {
+                        walkTimer?.invalidate()
+                        idleTimer?.invalidate()
+                        isFollowingMouse = false
+                        isChasingToy = false
+                        catAction = .sitting
+                    }
+                }
+            }
+
+            // Timer just ended
+            if wasFocusTimerActive && !isActive {
+                focusTimerDisplay = ""
+                // Celebrate!
+                catAction = .playing
+                frame = 0
+                SoundManager.shared.randomVoice(theme: cat.animalTheme, volume: 0.4)
+                spawnHearts()
+                cat.happiness = min(100, cat.happiness + 15)
+                scheduleNext(after: 2.5) {
+                    catAction = .idle
+                    scheduleNext(after: 1)
+                }
+            }
+
+            wasFocusTimerActive = isActive
+        }
+    }
+
+    // MARK: - Toss Physics
+
+    func startTossPhysics() {
+        isTossed = true
+        catAction = .jumping
+        let gravity: CGFloat = 0.8
+        let bounceDamping: CGFloat = 0.6
+        let friction: CGFloat = 0.98
+        let groundY = screenHeight - 40
+
+        tossTimer?.invalidate()
+        tossTimer = Timer.scheduledTimer(withTimeInterval: 0.016, repeats: true) { timer in
+            // Apply gravity
+            tossVelY += gravity
+
+            // Apply friction to X
+            tossVelX *= friction
+
+            // Move
+            catX += tossVelX
+            catY += tossVelY
+
+            // Face direction of movement
+            if abs(tossVelX) > 1 {
+                facingRight = tossVelX > 0
+            }
+
+            // Bounce off walls
+            if catX < 40 {
+                catX = 40
+                tossVelX = abs(tossVelX) * bounceDamping
+            } else if catX > screenWidth - 40 {
+                catX = screenWidth - 40
+                tossVelX = -abs(tossVelX) * bounceDamping
+            }
+
+            // Bounce off floor
+            if catY > groundY {
+                catY = groundY
+                tossVelY = -abs(tossVelY) * bounceDamping
+
+                // Squish on landing
+                if abs(tossVelY) > 2 {
+                    withAnimation(.spring(response: 0.15, dampingFraction: 0.3)) {
+                        squishScale = 0.7
+                    }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                        withAnimation(.spring(response: 0.2, dampingFraction: 0.5)) {
+                            squishScale = 1.0
+                        }
+                    }
+                    SoundManager.shared.randomVoice(theme: cat.animalTheme, volume: 0.3)
+                }
+            }
+
+            // Bounce off ceiling
+            if catY < 40 {
+                catY = 40
+                tossVelY = abs(tossVelY) * bounceDamping
+            }
+
+            // Stop when velocity is negligible
+            if abs(tossVelX) < 0.3 && abs(tossVelY) < 0.3 && catY >= groundY - 5 {
+                timer.invalidate()
+                isTossed = false
+                catAction = .idle
+                SoundManager.shared.randomVoice(theme: cat.animalTheme, volume: 0.25)
+                // Resume normal behavior after a beat
+                scheduleNext(after: 1.5)
+            }
+        }
+    }
+
+    // MARK: - Toys
+
+    func dropToy(_ emoji: String) {
+        let toyX = CGFloat.random(in: 100...(screenWidth - 100))
+        let toyY = CGFloat.random(in: 200...(screenHeight - 100))
+        let toy = PetToy(x: toyX, y: toyY, emoji: emoji)
+        toys.append(toy)
+
+        SoundManager.shared.play(cat.animalTheme.playSound, volume: 0.3)
+
+        // Pet chases the toy
+        chaseToy(toy)
+
+        // Toy disappears after 8 seconds
+        DispatchQueue.main.asyncAfter(deadline: .now() + 8) {
+            toys.removeAll { $0.id == toy.id }
+        }
+    }
+
+    func chaseToy(_ toy: PetToy) {
+        guard !isDragging && !isTossed else { return }
+        isChasingToy = true
+        idleTimer?.invalidate()
+        walkTimer?.invalidate()
+        isFollowingMouse = false
+
+        walkTo(x: toy.x, y: toy.y) {
+            // Arrived at toy - play!
+            catAction = .playing
+            frame = 0
+            cat.happiness = min(100, cat.happiness + 10)
+            SoundManager.shared.play(cat.animalTheme.playSound, volume: 0.4)
+
+            scheduleNext(after: 2) {
+                catAction = .idle
+                isChasingToy = false
+                // Remove the toy
+                toys.removeAll { $0.id == toy.id }
+                scheduleNext(after: 1)
+            }
+        }
+    }
+
     // MARK: - Mouse Following (Platformer)
 
     func startMouseTracking() {
         var lastMousePos: CGPoint = .zero
 
         mouseTracker = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: true) { _ in
+            // Skip mouse tracking during interactions or focus timer
+            if isDragging || isTossed || isChasingToy || cat.isFocusTimerActive { return }
+
             let screen = NSScreen.main!
             let mouseInCG = NSEvent.mouseLocation
             let mouseX = mouseInCG.x
@@ -356,6 +723,7 @@ struct WalkingCatView: View {
     // MARK: - Action Reactions (Feed/Play/Pet/Nap)
 
     func handleAction(_ action: String) {
+        guard !isDragging && !isTossed else { return }
         idleTimer?.invalidate()
         walkTimer?.invalidate()
         isFollowingMouse = false
@@ -380,6 +748,7 @@ struct WalkingCatView: View {
             }
         case "pet":
             catAction = .grooming
+            spawnHearts()
             scheduleNext(after: 2) {
                 catAction = .idle
                 scheduleNext(after: 2)
@@ -406,6 +775,7 @@ struct WalkingCatView: View {
         idleTimer?.invalidate()
         walkTimer?.invalidate()
 
+        if isDragging || isTossed || isChasingToy || cat.isFocusTimerActive { return }
         if isFollowingMouse { return }
 
         if cat.mood == .sleeping {
