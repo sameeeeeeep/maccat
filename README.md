@@ -14,7 +14,7 @@ a pixel art pet that lives on your screen, chases your cursor like it owes him m
 - **focus mode** - turn this on and try opening Instagram. your pets will literally start fighting on screen and block you from doomscrolling. you asked for this.
 - **focus timer** - set a 5-60 minute timer from the menu. your pet stays focused and so should you. tiny timer floats above them as a reminder.
 - **tamagotchi vibes** - hunger, happiness, energy. they decay. he will meow/bark/tweet at you when he's hungry. you will feel guilty.
-- **sounds** - theme-specific audio. meows, barks, tweets, purrs, growls, hisses. mute button exists if your coworkers are wondering why your laptop is barking.
+- **sounds** - real theme-specific audio. cats meow, dogs bark (actual bark samples with pitch variations), birds do crow calls. purrs, growls, hisses too. mute button exists if your coworkers are wondering why your laptop is barking.
 - **customizable** - 8 colors (for cat theme). rename your pet whatever you want. they don't care.
 
 ## install

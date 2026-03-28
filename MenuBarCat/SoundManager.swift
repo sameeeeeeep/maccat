@@ -12,17 +12,11 @@ class SoundManager {
 
     /// Fallback mappings: if a theme sound file doesn't exist, use these cat sounds
     private let fallbackSounds: [String: String] = [
-        // Dog fallbacks
-        "bark1": "meow1",
-        "bark2": "meow2",
-        "bark3": "meow3",
+        // Dog fallbacks (bark1/2/3 now have real files)
         "pant": "purr",
         "growl": "hiss",
         "yip": "chirp",
-        // Bird fallbacks
-        "tweet1": "chirp",
-        "tweet2": "chirp",
-        "tweet3": "chirp",
+        // Bird fallbacks (tweet1/2/3 now have real files)
         "coo": "purr",
     ]
 
